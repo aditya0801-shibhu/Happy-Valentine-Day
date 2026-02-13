@@ -1,23 +1,33 @@
-function showMessage() {
-    document.getElementById("hiddenMessage").style.display = "block";
-}
+const sections = document.querySelectorAll(".section");
 
-// Floating hearts generator
-function createHeart() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "💖";
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
 
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 20 + 15 + "px";
-    heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+        const video = entry.target.querySelector("video");
 
-    document.body.appendChild(heart);
+        if (entry.isIntersecting) {
 
-    setTimeout(() => {
-        heart.remove();
-    }, 6000);
-}
+            sections.forEach(sec => sec.classList.remove("active"));
 
-setInterval(createHeart, 500);
+            entry.target.classList.add("active");
 
+            video.classList.remove("blur");
+            video.currentTime = 0;
+            video.play();
+
+        } else {
+            video.pause();
+        }
+
+    });
+}, { threshold: 0.6 });
+
+sections.forEach(section => {
+    const video = section.querySelector("video");
+
+    video.addEventListener("ended", () => {
+        video.classList.add("blur");
+    });
+
+    observer.observe(section);
+});
